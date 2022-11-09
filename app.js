@@ -3,6 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const dotenv = require('dotenv').config();
+const passport = require('passport');
 
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
@@ -16,7 +17,8 @@ const mongoose = require('mongoose');
 mongoInitialize(mongoose);
 
 // Passport + JWT
-passportInitialize();
+passportInitialize(passport);
+app.use(passport.initialize());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -25,11 +27,6 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
-
-console.log('hello');
-app.listen('3001', () => {
-  console.log('Server is running at port: 3000');
-});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
