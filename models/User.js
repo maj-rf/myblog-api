@@ -4,14 +4,14 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
-    username: { type: String, required: true },
+    username: { type: String, required: true, maxLength: 25 },
     email: { type: String, required: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, minLength: 6 },
   },
   { timestamps: true }
 );
 
-UserSchema.virtual('fomatted_createdAt').get(function () {
+UserSchema.virtual('formatted_createdAt').get(function () {
   return DateTime.fromJSDate(this.createdAt).toLocaleString(DateTime.DATE_MED);
 });
 
