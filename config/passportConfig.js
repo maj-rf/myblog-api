@@ -9,8 +9,8 @@ const bcrypt = require('bcrypt');
 const passportInitialize = (passport) => {
   passport.use(
     new LocalStrategy((username, password, done) => {
-      User.findOne({ username: username }, (err, user) => {
-        if (err) done(err);
+      User.findOne({ username }, (err, user) => {
+        if (err) return done(err);
         if (!user) done(null, false, { message: 'Incorrect Username' });
         bcrypt.compare(password, user.password, (err, res) => {
           if (res) {
