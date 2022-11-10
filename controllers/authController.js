@@ -85,11 +85,13 @@ exports.post_login = (req, res, next) => {
           username: user.username,
           email: user.email,
         };
-        const token = jwt.sign({ user: body }, process.env.SECRET_KEY, {
+
+        const token = jwt.sign({ user }, process.env.SECRET_KEY, {
           expiresIn: '2d',
         });
 
         return res.json({
+          user: body,
           token,
         });
       });
