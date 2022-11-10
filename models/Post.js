@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Comment = require('./Comment').schema;
 
 const PostSchema = new Schema(
   {
@@ -7,6 +8,7 @@ const PostSchema = new Schema(
     title: { type: String, required: true },
     content: { type: String, required: true },
     published: { type: Boolean, default: false },
+    comments: [Comment],
   },
   { timestamps: true }
 );
