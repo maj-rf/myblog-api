@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 const Comment = require('./Comment').schema;
 
@@ -24,7 +24,7 @@ PostSchema.virtual('date_diff').get(function () {
     style: 'long',
   });
   const diff = Math.floor(
-    new Date(this.createdAt - new Date()) / (1000 * 60 * 60 * 24)
+    (this.createdAt.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
   );
   return diff >= -1 && diff < 0
     ? rtf.format(0, 'day')

@@ -1,4 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { DateTime } from 'luxon';
+
 const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema(
@@ -14,4 +16,5 @@ CommentSchema.virtual('formatted_createdAt').get(function () {
   return DateTime.fromJSDate(this.createdAt).toLocaleString(DateTime.DATE_MED);
 });
 
-module.exports = mongoose.model('Comment', CommentSchema);
+const Comment = mongoose.model('Comment', CommentSchema);
+export default Comment;

@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-const { DateTime } = require('luxon');
+import mongoose from 'mongoose';
+import { DateTime } from 'luxon';
+
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
@@ -19,4 +20,5 @@ UserSchema.virtual('url').get(function () {
   return '/profile/' + this._id;
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+export default User;
