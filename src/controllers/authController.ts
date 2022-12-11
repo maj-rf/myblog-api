@@ -1,30 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
+import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
-//@desc  Register new user
-//@route POST /api/users/register
-//@access Public
-export const registerUser = (
+// Handle User login on POST.
+export const auth_login_post = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  res.json({ message: 'Register User' });
-};
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    try {
+      if (err || !user) {
+        return res.status(400).json({
+          message: info,
+          user: user,
+        });
+      }
+      req.login(user, { session: false }, (err) => {
+        if (err) res.send(err);
+        const body = {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+        };
 
-//@desc  Login user
-//@route POST /api/users/login
-//@access Public
-export const loginUser = (req: Request, res: Response, next: NextFunction) => {
-  res.json({ message: 'Login User' });
-};
+        const token = jwt.sign(
+          { user },
+          process.env.SECRET_KEY || 'secretkey',
+          {
+            expiresIn: '1d',
+          }
+        );
 
-//@desc  Get user data
-//@route GET /api/users/me
-//@access Public
-export const getCurrentUser = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  res.json({ message: 'Login User' });
+        return res.json({
+          user: body,
+          token,
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  })(req, res);
 };
