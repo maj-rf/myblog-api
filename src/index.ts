@@ -1,15 +1,20 @@
 import { init } from './config/mongoConfig';
-import express, { Request, Response } from 'express';
+import { passportInit } from './config/passportConfig';
+import express from 'express';
+import passport from 'passport';
 
 const app = express();
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
-//mongoDB
-init(app);
 
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+//mongoDB & passport
+init(app);
+passportInit(passport);
+app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
