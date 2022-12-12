@@ -9,14 +9,10 @@ export const init = async (app: any) => {
     process.env.MONGO_URI ||
     `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.hslj4fv.mongodb.net/?retryWrites=true&w=majority`;
   const PORT = process.env.PORT || '3000';
-  try {
-    const conn = await mongoose.connect(MONGO_URI);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    app.listen(PORT, () => {
-      console.log(`listening on port: ${PORT}`);
-    });
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
-  }
+  mongoose.connect(MONGO_URI);
+  app.listen(PORT, () => {
+    console.log(`listening on port: ${PORT}`);
+  });
+  const db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 };
