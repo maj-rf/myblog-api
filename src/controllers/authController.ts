@@ -28,14 +28,14 @@ export const auth_login_post = async (
             email: user.email,
           };
 
-          const token = jwt.sign({ user }, process.env.SECRET_KEY || '', {
+          const token = jwt.sign({ user }, process.env.JWT_SECRET || '', {
             expiresIn: '1d',
           });
 
           return res.json({
+            success: 'true',
             user: body,
-            message: 'Auth Success',
-            token,
+            token: token,
           });
         });
       } catch (error) {
