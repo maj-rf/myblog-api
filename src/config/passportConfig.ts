@@ -3,13 +3,12 @@ import { MongooseError } from 'mongoose';
 import passportJWT from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 import User from '../models/User';
-import passport from 'passport';
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 import bcrypt from 'bcryptjs';
 
-export const passportInit = () => {
+export const passportInit = (passport: any) => {
   passport.use(
     new LocalStrategy.Strategy(
       (username: string, password: string, done: Function) => {
@@ -38,9 +37,9 @@ export const passportInit = () => {
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: process.env.JWT_SECRET,
       },
-      async (jwtPayload: any, done) => {
+      async (jwtPayload, done) => {
         try {
-          const user = await User.findById(jwtPayload.id);
+          const user = await User.findById(jwtPayload.user._id);
           return done(null, user!);
         } catch (err) {
           return done(err);
