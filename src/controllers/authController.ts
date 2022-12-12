@@ -16,7 +16,7 @@ export const auth_login_post = async (
       try {
         if (err || !user) {
           return res.status(400).json({
-            message: info,
+            message: 'Auth Failed',
             user: user,
           });
         }
@@ -28,16 +28,13 @@ export const auth_login_post = async (
             email: user.email,
           };
 
-          const token = jwt.sign(
-            { user },
-            process.env.SECRET_KEY || 'secretkey',
-            {
-              expiresIn: '1d',
-            }
-          );
+          const token = jwt.sign({ user }, process.env.SECRET_KEY || '', {
+            expiresIn: '1d',
+          });
 
           return res.json({
             user: body,
+            message: 'Auth Success',
             token,
           });
         });
