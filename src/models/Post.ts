@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 const Schema = mongoose.Schema;
 const Comment = require('./Comment').schema;
 
@@ -31,4 +31,5 @@ PostSchema.virtual('date_diff').get(function () {
     : rtf.format(diff, 'days');
 });
 
-module.exports = mongoose.model('Post', PostSchema);
+export type TPost = InferSchemaType<typeof PostSchema>;
+module.exports = mongoose.model<TPost>('Post', PostSchema);

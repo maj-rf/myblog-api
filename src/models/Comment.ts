@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 import { DateTime } from 'luxon';
 
 const Schema = mongoose.Schema;
@@ -16,5 +16,6 @@ CommentSchema.virtual('formatted_createdAt').get(function () {
   return DateTime.fromJSDate(this.createdAt).toLocaleString(DateTime.DATE_MED);
 });
 
-const Comment = mongoose.model('Comment', CommentSchema);
+export type TComment = InferSchemaType<typeof CommentSchema>;
+const Comment = mongoose.model<TComment>('Comment', CommentSchema);
 export default Comment;
