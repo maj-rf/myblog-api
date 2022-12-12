@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 //mongoDB & passport
 init(app);
-passportInit();
+passportInit(passport);
 app.use(passport.initialize());
 
 app.use('/', indexRouter);
