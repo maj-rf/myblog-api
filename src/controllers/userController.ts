@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import User from '../models/User';
+import Post from '../models/Post';
 
 export const post_register = [
   body('username', 'Username is required')
@@ -70,10 +71,28 @@ export const post_logout = function (req: Response, res: Response) {
   res.redirect('/');
 };
 
-export const get_currentUser = function (
+export const getUserProfileAndPosts = async function (
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  res.json({ user: req.user });
+  const post_count = await Post.countDocuments({ author: req.params.id }).catch(
+    (err) => next(err)
+  );
+  const recent_posts = await Post.find({ author: req.params.id })
+    .sort({ createdAt: -1 })
+    .limit(3)
+    .populate('author, username email')
+    .catch((err) => next(err));
+
+  res.json({ post_count, recent_posts });
+};
+
+export const getUserPost = async function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const post = await Post.findById(req.params.postid).catch((err) => next(err));
+  res.json({ post });
 };
