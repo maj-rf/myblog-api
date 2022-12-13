@@ -1,9 +1,13 @@
 import express, { Request, Response } from 'express';
-const router = express.Router();
+const indexRouter = express.Router();
 
 //index
-router.get('/', (req: Request, res: Response) => {
+indexRouter.get('/', (req: Request, res: Response) => {
   res.redirect('/api');
 });
 
-module.exports = router;
+indexRouter.get('/api', (req: Request, res: Response) => {
+  res.send({ message: 'welcome to the api' });
+});
+
+export default indexRouter;
