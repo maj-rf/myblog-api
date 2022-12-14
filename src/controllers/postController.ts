@@ -1,7 +1,13 @@
+import { TUser } from './../models/User';
 import { TPost } from './../models/Post';
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import Post from '../models/Post';
+
+// interface to include user in http request
+interface IUserRequest extends Request {
+  user: any;
+}
 
 export const getAllPosts = async function (
   req: Request,
@@ -28,19 +34,22 @@ export const createPost = [
     .isLength({ min: 1 })
     .withMessage('Blog must not be empty')
     .escape(),
-  (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
+  (req: IUserRequest, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).mapped();
     // If invalid
-    if (!errors.isEmpty()) {
-      res.json({ errors: errors.array() });
-      return;
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
     //If valid
+    /*   Pick only _id and username from req.user<TUser>
+     and only send these as credentials */
+    const reqUser = req.user as Pick<TUser, '_id' | 'username'>;
+    const authorCredentials = { _id: reqUser._id, username: reqUser.username };
     const newPost: TPost = new Post({
       title: req.body.title,
       content: req.body.content,
       published: req.body.published,
-      author: req.user,
+      author: authorCredentials,
       comment: req.body.comments,
     });
 
