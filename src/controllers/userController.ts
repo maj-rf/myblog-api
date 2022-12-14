@@ -71,7 +71,7 @@ export const post_logout = function (req: Response, res: Response) {
   res.redirect('/');
 };
 
-export const getUserProfileAndPosts = async function (
+export const get_user_detail = async function (
   req: Request,
   res: Response,
   next: NextFunction
@@ -82,17 +82,30 @@ export const getUserProfileAndPosts = async function (
   const recent_posts = await Post.find({ author: req.params.id })
     .sort({ createdAt: -1 })
     .limit(3)
-    .populate('author, username email')
+    .populate('author', 'username email')
     .catch((err) => next(err));
 
   res.json({ post_count, recent_posts });
 };
 
-export const getUserPost = async function (
+// export const getUserPost = async function (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   const post = await Post.findById(req.params.postid).catch((err) => next(err));
+//   res.json({ post });
+// };
+
+export const delete_user = async function (
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const post = await Post.findById(req.params.postid).catch((err) => next(err));
-  res.json({ post });
+  // req.params.id is the User's/Authors ObjectId.
+  // delete User and all User Messages in DB.
+  await User.findByIdAndRemove(req.params.id).catch((err) => next(err));
+  await Post.deleteMany({ author: req.params.id });
+  res.clearCookie('jwt');
+  res.json({ message: 'Account deleted' });
 };
