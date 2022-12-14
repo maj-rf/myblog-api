@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User';
 import Post from '../models/Post';
 
+// CREATE User
 export const post_register = [
   body('username', 'Username is required')
     .trim()
@@ -67,10 +68,13 @@ export const post_register = [
   },
 ];
 
+// LOG OUT
 export const post_logout = function (req: Response, res: Response) {
+  res.clearCookie('jwt');
   res.redirect('/');
 };
 
+// GET User Detail
 export const get_user_detail = async function (
   req: Request,
   res: Response,
@@ -88,15 +92,7 @@ export const get_user_detail = async function (
   res.json({ post_count, recent_posts });
 };
 
-// export const getUserPost = async function (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) {
-//   const post = await Post.findById(req.params.postid).catch((err) => next(err));
-//   res.json({ post });
-// };
-
+// DELETE User
 export const delete_user = async function (
   req: Request,
   res: Response,
