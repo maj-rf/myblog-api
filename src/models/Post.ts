@@ -1,15 +1,15 @@
-import mongoose, { Types, Document } from 'mongoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 import Comment from './Comment';
 
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema(
   {
-    author: { type: Types.ObjectId, ref: 'User', required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     published: { type: Boolean, default: false },
-    comments: { type: [Types.ObjectId], default: [], ref: 'Comment' },
+    comments: { type: [Schema.Types.ObjectId], default: [], ref: 'Comment' },
   },
   { timestamps: true }
 );
@@ -33,12 +33,12 @@ PostSchema.virtual('date_diff').get(function () {
 });
 
 export interface TPost extends Document {
-  _id: Types.ObjectId;
-  author: Types.ObjectId;
+  _id: ObjectId;
+  author: ObjectId;
   title: string;
   content: string;
   published: boolean;
-  comments: Types.ObjectId[];
+  comments: ObjectId[];
 }
 
 // export interface TPost extends InferSchemaType<typeof PostSchema> {

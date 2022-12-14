@@ -1,4 +1,4 @@
-import mongoose, { Types, Document } from 'mongoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 import { DateTime } from 'luxon';
 
 const Schema = mongoose.Schema;
@@ -21,7 +21,7 @@ UserSchema.virtual('url').get(function () {
 });
 
 export interface TUser extends Document {
-  _id: Types.ObjectId;
+  _id: ObjectId;
   username: string;
   email: string;
   password: string;
