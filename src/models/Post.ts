@@ -1,5 +1,5 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
-import Comment from './Comment';
+import { TPost } from './../types/post';
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -31,19 +31,6 @@ PostSchema.virtual('date_diff').get(function () {
     ? rtf.format(0, 'day')
     : rtf.format(diff, 'days');
 });
-
-export interface TPost extends Document {
-  _id: ObjectId;
-  author: ObjectId;
-  title: string;
-  content: string;
-  published: boolean;
-  comments: ObjectId[];
-}
-
-// export interface TPost extends InferSchemaType<typeof PostSchema> {
-//   _id: Types.ObjectId;
-// }
 
 const Post = mongoose.model<TPost>('Post', PostSchema);
 export default Post;

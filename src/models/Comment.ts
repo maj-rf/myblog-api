@@ -1,4 +1,5 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
+import { TComment } from '../types/comment';
+import mongoose from 'mongoose';
 import { DateTime } from 'luxon';
 
 const Schema = mongoose.Schema;
@@ -16,15 +17,5 @@ CommentSchema.virtual('formatted_createdAt').get(function () {
   return DateTime.fromJSDate(this.createdAt).toLocaleString(DateTime.DATE_MED);
 });
 
-export interface TComment extends Document {
-  _id: ObjectId;
-  author: ObjectId;
-  post: ObjectId;
-  content: string;
-}
-
-// export interface TComment extends InferSchemaType<typeof CommentSchema> {
-//   _id: Types.ObjectId;
-// }
 const Comment = mongoose.model<TComment>('Comment', CommentSchema);
 export default Comment;

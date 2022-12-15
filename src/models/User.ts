@@ -1,8 +1,8 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { DateTime } from 'luxon';
+import { TUser } from '../types/user';
 
 const Schema = mongoose.Schema;
-
 const UserSchema = new Schema(
   {
     username: { type: String, required: true, maxLength: 25, unique: true },
@@ -20,15 +20,5 @@ UserSchema.virtual('url').get(function () {
   return '/profile/' + this._id;
 });
 
-export interface TUser extends Document {
-  _id: ObjectId;
-  username: string;
-  email: string;
-  password: string;
-}
-
-// export interface TUser extends InferSchemaType<typeof UserSchema> {
-//   _id: Types.ObjectId;
-// }
 const User = mongoose.model<TUser>('User', UserSchema);
 export default User;
