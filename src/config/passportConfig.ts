@@ -1,4 +1,4 @@
-import { TUser } from './../models/User';
+import { TUser } from '../types/user';
 import { MongooseError } from 'mongoose';
 import passportJWT from 'passport-jwt';
 import LocalStrategy from 'passport-local';

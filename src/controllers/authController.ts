@@ -1,4 +1,4 @@
-import { TUser } from './../models/User';
+import { TUser } from '../types/user';
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';

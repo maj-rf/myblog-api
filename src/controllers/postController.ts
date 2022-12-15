@@ -1,14 +1,11 @@
-import User, { TUser } from './../models/User';
-import { TPost } from './../models/Post';
+import User from './../models/User';
+import { TUser } from '../types/user';
+import { TPost } from '../types/post';
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import Post from '../models/Post';
 import Comment from '../models/Comment';
 import { QueryOptions } from 'mongoose';
-// interface to include user in http request
-// interface IUserRequest extends Request {
-//   user: any;
-// }
 
 // GET All Posts
 export const getAllPosts = async function (
