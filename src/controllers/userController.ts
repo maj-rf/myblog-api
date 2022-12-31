@@ -37,7 +37,7 @@ export const post_register = [
     .isLength({ min: 6 })
     .escape()
     .withMessage('Minimum length of 6 characters'),
-  body('confirm-pass')
+  body('confirmpass')
     .notEmpty()
     .custom((value, { req }) => {
       if (value !== req.body.password) {
