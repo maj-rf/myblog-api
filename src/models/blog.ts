@@ -1,0 +1,21 @@
+import mongoose from 'mongoose';
+
+const { Schema } = mongoose;
+
+const BlogSchema = new Schema({
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
+  title: String,
+  content: String,
+  published: { type: Boolean, default: false },
+  comments: [{ type: [Schema.Types.ObjectId], ref: 'Comment' }],
+});
+
+BlogSchema.set('toJSON', {
+  transform: (_document, returnedObject) => {
+    // returnedObject.id = returnedObject._id.toString();
+    // delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
+export const Blog = mongoose.model('Blog', BlogSchema);
