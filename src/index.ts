@@ -1,8 +1,9 @@
 import app from './app';
 import http from 'http';
+import * as logger from './utils/logger';
 const server = http.createServer(app);
-const PORT = 3003;
+import { PORT } from './config/config';
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
 });
