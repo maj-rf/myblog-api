@@ -8,15 +8,14 @@ import * as middleware from './utils/middleware';
 
 logger.info(`connecting to: ${MONGO_URI}`);
 
-if (MONGO_URI)
-  mongoose
-    .connect(MONGO_URI)
-    .then(() => {
-      logger.info('connected to MongoDB');
-    })
-    .catch((error) => {
-      logger.error(`error connecting to MongoDB: ${error.message}`);
-    });
+mongoose
+  .connect(`${MONGO_URI}`)
+  .then(() => {
+    logger.info('connected to MongoDB');
+  })
+  .catch((error) => {
+    logger.error(`error connecting to MongoDB: ${error.message}`);
+  });
 
 const app = express();
 morgan.token('body', (req: Request) => JSON.stringify(req.body));

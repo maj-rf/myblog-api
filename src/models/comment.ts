@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IComment } from '../types';
 const { Schema } = mongoose;
 
 const CommentSchema = new Schema({
@@ -15,4 +16,4 @@ CommentSchema.set('toJSON', {
   },
 });
 
-export const Comment = mongoose.model('Comment', CommentSchema);
+export const Comment = mongoose.model<IComment>('Comment', CommentSchema);

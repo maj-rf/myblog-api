@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
+import { IUser } from '../types';
 
 const { Schema } = mongoose;
 
@@ -25,4 +26,4 @@ UserSchema.set('toJSON', {
   },
 });
 
-export const User = mongoose.model('User', UserSchema);
+export const User = mongoose.model<IUser>('User', UserSchema);

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IBlog } from '../types';
 
 const { Schema } = mongoose;
 
@@ -7,6 +8,7 @@ const BlogSchema = new Schema({
   title: String,
   content: String,
   published: { type: Boolean, default: false },
+  tags: [{ type: String }],
   comments: [{ type: [Schema.Types.ObjectId], ref: 'Comment' }],
 });
 
@@ -18,4 +20,4 @@ BlogSchema.set('toJSON', {
   },
 });
 
-export const Blog = mongoose.model('Blog', BlogSchema);
+export const Blog = mongoose.model<IBlog>('Blog', BlogSchema);
