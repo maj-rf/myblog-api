@@ -1,3 +1,5 @@
+import { JwtPayload } from 'jsonwebtoken';
+import { Request } from 'express';
 import { Document } from 'mongoose';
 export interface IComment extends Document {
   content: string;
@@ -18,4 +20,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   blog: Array<IBlog['id']>;
+}
+
+export interface CustomRequest extends Request {
+  token: string | JwtPayload;
 }
