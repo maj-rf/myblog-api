@@ -31,7 +31,8 @@ export const registerUser = [
   body('confirm_pass')
     .trim()
     .escape()
-    .custom((value, { req }) => {
+    .custom(async (value, { req }) => {
+      console.log(value);
       if (value !== req.body.password)
         throw new Error('Passwords do not match');
     }),
