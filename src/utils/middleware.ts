@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, ErrorRequestHandler } from 'express';
 import { CustomRequest } from '../types';
 import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config/config';
 
-const secretKey = process.env.SECRET;
 export const unknownEndpoint = (_request: Request, response: Response) => {
   response.status(404).send({ error: 'unknown endpoint' });
 };
@@ -36,7 +36,7 @@ export const jwtAuth = async (
 ) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    const decoded = jwt.verify(`${token}`, `${secretKey}`);
+    const decoded = jwt.verify(`${token}`, `${SECRET_KEY}`);
     (req as CustomRequest).token = decoded;
     next();
   } catch (err) {
