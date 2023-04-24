@@ -1,10 +1,7 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import { createBlog, getALLBlogs } from '../controllers/blogController';
 export const blogRouter = express.Router();
 
-blogRouter.get('/', (_req: Request, res: Response) => {
-  res.send('hello from blog route');
-});
+blogRouter.get('/', getALLBlogs);
 
-blogRouter.post('/', async (req: Request, res: Response) => {
-  res.json('hi');
-});
+blogRouter.post('/', createBlog);
