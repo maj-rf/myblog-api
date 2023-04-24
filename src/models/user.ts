@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import uniqueValidator from 'mongoose-unique-validator';
+//import uniqueValidator from 'mongoose-unique-validator';
 import { IUser } from '../types';
 
 const { Schema } = mongoose;
@@ -14,7 +14,7 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-UserSchema.plugin(uniqueValidator);
+//UserSchema.plugin(uniqueValidator);
 
 UserSchema.set('toJSON', {
   transform: (_document, returnedObject) => {

@@ -4,7 +4,7 @@ import { IBlog } from '../types';
 const { Schema } = mongoose;
 
 const BlogSchema = new Schema({
-  author: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
   title: String,
   content: String,
   published: { type: Boolean, default: false },
