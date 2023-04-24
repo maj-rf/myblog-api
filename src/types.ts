@@ -7,7 +7,7 @@ export interface IComment extends Document {
 }
 
 export interface IBlog extends Document {
-  author: IUser['_id'];
+  user: IUser['_id'];
   title: string;
   content: string;
   published: boolean;
