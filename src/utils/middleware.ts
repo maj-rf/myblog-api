@@ -18,7 +18,7 @@ export const errorHandler: ErrorRequestHandler = (
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message });
   } else if (error.name === 'JsonWebTokenError') {
-    return response.status(400).json({ error: 'invalid token' });
+    return response.status(400).json({ error: 'Unauthorized User' });
   } else if (error.name === 'TokenExpiredError') {
     return response.status(401).json({
       error: 'token expired',
@@ -29,15 +29,12 @@ export const errorHandler: ErrorRequestHandler = (
 
 export const jwtAuth = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-      throw new Error();
-    }
-    const decoded = jwt.verify(token, `${secretKey}`);
+    const decoded = jwt.verify(`${token}`, `${secretKey}`);
     (req as CustomRequest).token = decoded;
     next();
   } catch (err) {
