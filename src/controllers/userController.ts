@@ -87,7 +87,7 @@ export const registerUser = [
 // };
 
 export const getAllUsers = async (_req: Request, res: Response) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate('blog');
   res.json(users);
 };
 

@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { CustomRequest } from '../types';
-//import jwt from 'jsonwebtoken';
-//import { SECRET_KEY } from '../config/config';
 import { Blog } from '../models/blog';
 import { User } from '../models/user';
 import { JwtPayload } from 'jsonwebtoken';
@@ -45,6 +43,6 @@ export const createBlog = [
 ];
 
 export const getALLBlogs = async (req: Request, res: Response) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate('user');
   res.json(blogs);
 };
