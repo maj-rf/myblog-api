@@ -9,7 +9,7 @@ const UserSchema = new Schema(
     username: { type: String, maxLength: 25, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minLength: 6 },
-    blog: [{ type: Schema.Types.ObjectId, ref: 'Blog' }],
+    //blog: [{ type: Schema.Types.ObjectId, ref: 'Blog' }],
   },
   { timestamps: true },
 );

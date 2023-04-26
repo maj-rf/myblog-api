@@ -9,7 +9,7 @@ const BlogSchema = new Schema({
   content: String,
   published: { type: Boolean, default: false },
   tags: [{ type: String }],
-  comments: [{ type: [Schema.Types.ObjectId], ref: 'Comment' }],
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
 BlogSchema.set('toJSON', {
