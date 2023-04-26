@@ -8,6 +8,7 @@ import { MONGO_URI } from './config/config';
 import * as middleware from './utils/middleware';
 import { userRouter } from './routes/userRouter';
 import { blogRouter } from './routes/blogRouter';
+import { commentRouter } from './routes/commentRouter';
 
 // MONGODB CONNECTION
 logger.info(`connecting to: ${MONGO_URI}`);
@@ -39,6 +40,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 app.use('/api/blogs', middleware.jwtAuth, blogRouter);
 app.use('/api/users', userRouter);
+app.use('/api/comments', middleware.jwtAuth, commentRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
