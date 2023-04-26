@@ -1,74 +1,47 @@
-import { TComment } from '../types/comment';
-import { TUser } from '../types/user';
-import { ExtendedRequest } from '../types/extReq';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import Comment from '../models/Comment';
-import { QueryOptions } from 'mongoose';
-import Post from '../models/Post';
-
-export const getAllComments = (
-  req: ExtendedRequest,
+import { CustomRequest } from '../types';
+import { Blog } from '../models/blog';
+import { Comment } from '../models/comment';
+import { PublicUser, IUser } from '../types';
+export const getAllCommentsForThisBlog = async (
+  req: Request,
   res: Response,
-  next: NextFunction
 ) => {
-  Comment.find({ post: req.postId })
-    .sort({ createdAt: 1 })
-    .populate('author', 'username')
-    .exec((err, comments: TComment[]) => {
-      if (err) return next(err);
-      res.json({ comments });
-    });
+  const blogId = req.params.id;
+  const comments = await Comment.find({ blog: blogId }).populate({
+    path: 'user',
+    select: 'username',
+  });
+  res.json(comments);
 };
 
-export const createComment = [
-  body('content', 'A comment is required')
+export const createCommentForThisBlog = [
+  body('comment_content', 'Comment content is required')
     .trim()
-    .isLength({ min: 1 })
-    .withMessage('Blog must not be empty')
-    .escape(),
-  (req: ExtendedRequest, res: Response, next: NextFunction) => {
-    const errors = validationResult(req).mapped();
-    // If invalid
-    if (Object.keys(errors).length > 0) {
-      return res.status(400).json({ errors });
+    .escape()
+    .isLength({ min: 2 })
+    .withMessage('Comment must be at least 2 characters long'),
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.json({ errors: errors.array() });
     }
-    //If valid
-    const reqUser = req.user as Pick<TUser, '_id' | 'username'>;
-    const authorCredentials = { _id: reqUser._id, username: reqUser.username };
-    const reqBody = req.body as Pick<TComment, 'content' | 'post'>;
-    const newComment: TComment = new Comment({
-      content: reqBody.content,
-      author: authorCredentials,
-      post: req.postId,
+    const { comment_content } = req.body;
+    const blogId = req.params.id;
+    const token = (req as CustomRequest).token as IUser;
+    const user: PublicUser = { username: token.username, _id: token.id };
+    const blog = await Blog.findById(blogId);
+    const comment = new Comment({
+      content: comment_content,
+      user,
+      blog,
     });
-    newComment.save((err) => {
-      if (err) return next(err);
-      const updateOption: QueryOptions & { rawResult: true } = {
-        new: true,
-        upsert: true,
-        rawResult: true,
-      };
-
-      // Add Comment to specific Post
-      Post.findByIdAndUpdate(
-        req.postId,
-        { $push: { comments: newComment } },
-        updateOption,
-        (updateErr, updatedPost) => {
-          if (updateErr) return next(updateErr);
-          // populate comments
-          Post.findById(req.postId)
-            .populate({
-              path: 'comments',
-              populate: { path: 'author', select: 'username' },
-            })
-            .exec((postErr, post) => {
-              if (postErr) return next(postErr);
-              res.json({ post });
-            });
-        }
-      );
-    });
+    if (!blog) return res.status(400).json({ error: 'Blog does not exist.' });
+    const result = await comment.save();
+    result.depopulate('blog');
+    blog.comments = blog.comments.concat(comment._id);
+    await blog.save();
+    res.json(result);
   },
 ];

@@ -1,107 +1,85 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
+import { User } from '../models/user';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../config/config';
 import { body, validationResult } from 'express-validator';
-import bcrypt from 'bcryptjs';
-import User from '../models/User';
-import Post from '../models/Post';
 
-// CREATE User
-export const post_register = [
+export const registerUser = [
   body('username', 'Username is required')
     .trim()
     .escape()
-    .custom(async (username) => {
-      try {
-        const existingUsername = await User.findOne({ username: username });
-        if (existingUsername) {
-          throw new Error('Username is already in use.');
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }),
-  body('email', 'Email is required')
+    .isLength({ min: 6 })
+    .withMessage('Username must be at least 6 characters'),
+  body('email')
     .trim()
+    .escape()
     .normalizeEmail()
     .isEmail()
-    .withMessage('Invalid Email')
-    .custom(async (email) => {
-      try {
-        const usedEmail = await User.findOne({ email: email });
-        if (usedEmail) throw new Error('Email is already in use.');
-      } catch (err) {
-        console.log(err);
+    .withMessage('Invalid email address.')
+    .custom(async (mail) => {
+      const existingEmail = await User.findOne({ email: mail });
+      if (existingEmail) {
+        throw new Error('Email is already in use. Try again.');
       }
     }),
-  body('password')
+  body('password', 'Password is required')
     .trim()
-    .isLength({ min: 6 })
     .escape()
-    .withMessage('Minimum length of 6 characters'),
-  body('confirmpass')
-    .notEmpty()
-    .custom((value, { req }) => {
-      if (value !== req.body.password) {
-        return false;
-      }
-      return true;
-    })
-    .withMessage('Passwords do not match'),
-
-  async (req: Request, res: Response, next: NextFunction) => {
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters'),
+  body('confirm_pass')
+    .trim()
+    .escape()
+    .custom(async (value, { req }) => {
+      console.log(value);
+      if (value !== req.body.password)
+        throw new Error('Passwords do not match');
+    }),
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors });
-    } else {
-      bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
-        if (err) return next(err);
-        const newUser = new User({
-          username: req.body.username,
-          email: req.body.email,
-          password: hashedPassword,
-        });
-        newUser.save((err) => {
-          if (err) return next(err);
-          res.status(200).json({ message: 'Account created!' });
-        });
-      });
+      return res.json({ errors: errors.array() });
     }
+    const { username, email, password } = req.body;
+
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const user = new User({
+      username,
+      email,
+      password: passwordHash,
+    });
+    const savedUser = await user.save();
+    res.status(201).json(savedUser);
   },
 ];
 
-// LOG OUT
-export const post_logout = function (req: Response, res: Response) {
-  res.clearCookie('jwt');
-  res.redirect('/');
+export const getAllUsers = async (_req: Request, res: Response) => {
+  const users = await User.find({}).populate('blog');
+  res.json(users);
 };
 
-// GET User Detail
-export const get_user_detail = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const post_count = await Post.countDocuments({ author: req.params.id }).catch(
-    (err) => next(err)
-  );
-  const recent_posts = await Post.find({ author: req.params.id })
-    .sort({ createdAt: -1 })
-    .limit(3)
-    .populate('author', 'username email')
-    .catch((err) => next(err));
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  const passwordCorrect = user
+    ? await bcrypt.compare(password, user.password)
+    : false;
+  if (!user) {
+    return res.status(400).json({ error: 'Email does not exist.' });
+  }
+  if (user && !passwordCorrect) {
+    return res.status(422).json({ error: 'Incorrect password.' });
+  }
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  };
 
-  res.json({ post_count, recent_posts });
-};
+  const token = jwt.sign(userForToken, `${SECRET_KEY}`, {
+    expiresIn: '1d',
+  });
 
-// DELETE User
-export const delete_user = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  // req.params.id is the User's/Authors ObjectId.
-  // delete User and all User Messages in DB.
-  await User.findByIdAndRemove(req.params.id).catch((err) => next(err));
-  await Post.deleteMany({ author: req.params.id });
-  res.clearCookie('jwt');
-  res.json({ message: 'Account deleted' });
+  res.status(200).json({ token, username: user.username, email: user.email });
 };
