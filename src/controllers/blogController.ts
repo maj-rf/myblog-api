@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { CustomRequest } from '../types';
 import { Blog } from '../models/blog';
-import { User } from '../models/user';
-import { JwtPayload } from 'jsonwebtoken';
-
+import { PublicUser, IUser } from '../types';
 export const createBlog = [
   body('title', 'Title is required.')
     .trim()
@@ -22,27 +20,25 @@ export const createBlog = [
       return res.json({ errors: errors.array() });
     }
     const { title, content } = req.body;
-    const token = (req as CustomRequest).token as JwtPayload;
-    const user = await User.findById(token.id);
-    console.log(user);
-    if (user) {
-      const blog = new Blog({
-        title,
-        content,
-        user,
-        published: false,
-        comments: [],
-        tags: [],
-      });
-      const result = await blog.save();
-      user.blog = user.blog.concat(blog._id);
-      await user.save();
-      res.status(201).json(result);
-    }
+    const token = (req as CustomRequest).token as IUser;
+    const user: PublicUser = { username: token.username, _id: token.id };
+    const blog = new Blog({
+      title,
+      content,
+      user,
+      published: false,
+      comments: [],
+      tags: [],
+    });
+    const result = await blog.save();
+    res.status(201).json(result);
   },
 ];
 
 export const getALLBlogs = async (req: Request, res: Response) => {
-  const blogs = await Blog.find({}).populate('user');
+  const blogs = await Blog.find({}).populate({
+    path: 'user',
+    select: 'username',
+  });
   res.json(blogs);
 };
