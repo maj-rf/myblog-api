@@ -9,6 +9,7 @@ The server for my Blog-Client Web App.
 ### Users
 
 - GET `api/users/` => Get all users.
+
   Response:
 
   ```
@@ -24,6 +25,7 @@ The server for my Blog-Client Web App.
   ```
 
 - POST `api/users/register` => Create a user.
+
   Request Body Example & Response:
 
   ```
@@ -41,6 +43,7 @@ The server for my Blog-Client Web App.
   ```
 
 - POST `api/users/login` => Log In to application.
+
   Request Body Example & Response:
 
   ```
@@ -60,6 +63,7 @@ The server for my Blog-Client Web App.
 ### Blogs
 
 - GET `/api/blogs/` => Get all blogs made by users.
+
   Response:
 
   ```
@@ -84,6 +88,7 @@ The server for my Blog-Client Web App.
   ```
 
 - POST `/api/blogs/` => Create a blog.
+
   Request Body Example & Response:
 
   ```
@@ -107,6 +112,7 @@ The server for my Blog-Client Web App.
 ### Comments
 
 - GET `/api/comments/:id` => Get comments from a specific blog.
+
   Response:
 
   ```
@@ -124,6 +130,7 @@ The server for my Blog-Client Web App.
   ```
 
 - POST `/api/comments/:id` => Create a comment to a specific blog.
+
   Request Body Example & Response:
 
   ```
@@ -143,12 +150,15 @@ The server for my Blog-Client Web App.
 ### Error Response
 
 - Cast Error => Wrong Blog ids from request.
+
   Response: `{ error: 'malformatted id' }`
 
 - JsonWebTokenError => Unregistered user accessing protected API endpoints.
+
   Response: `{ error: 'Unauthorized User' }`
 
 - TokenExpiredError => Accessing protected API endpoints when token is expired.
+
   Response: `{ error: 'token expired' }`
 
 - Errors from validation via express-validator => Submitting empty required fields, wrong passwords, etc.
@@ -170,5 +180,5 @@ Technologies:
 ## Installation and Running the Project Locally
 
 - Go to root directory and run `npm install` to install dependencies.
-- Create `.env` file and input your `MONGODB_UP`, `PORT`, and `SECRET_KEY`.
-- Run `npm run dev` for development and `npm run build` for production.
+- Create `.env` file and input your `MONGODB_URI`, `PORT`, and `SECRET_KEY`.
+- Run `npm run dev` for development or `npm run build` for production.
