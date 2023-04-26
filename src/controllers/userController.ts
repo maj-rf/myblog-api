@@ -50,13 +50,13 @@ export const registerUser = [
       email,
       password: passwordHash,
     });
-    const savedUser = await user.save();
-    res.status(201).json(savedUser);
+    await user.save();
+    res.status(201).json({ message: 'Succesfully registered' });
   },
 ];
 
 export const getAllUsers = async (_req: Request, res: Response) => {
-  const users = await User.find({}).populate('blog');
+  const users = await User.find({});
   res.json(users);
 };
 
