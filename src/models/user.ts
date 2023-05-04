@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 //import uniqueValidator from 'mongoose-unique-validator';
-import { IUser } from '../types';
+import { IUser } from '../types/types';
 
 const { Schema } = mongoose;
 
