@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { CustomRequest } from '../types';
+import { CustomRequest } from '../types/types';
 import { Blog } from '../models/blog';
-import { PublicUser, IUser } from '../types';
+import { PublicUser, IUser } from '../types/types';
 export const createBlog = [
   body('title', 'Title is required.')
     .trim()

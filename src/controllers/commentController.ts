@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { CustomRequest } from '../types';
+import { CustomRequest } from '../types/types';
 import { Blog } from '../models/blog';
 import { Comment } from '../models/comment';
-import { PublicUser, IUser } from '../types';
+import { PublicUser, IUser } from '../types/types';
 export const getAllCommentsForThisBlog = async (
   req: Request,
   res: Response,

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IBlog } from '../types';
+import { IBlog } from '../types/types';
 
 const { Schema } = mongoose;
 
