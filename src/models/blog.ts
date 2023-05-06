@@ -3,14 +3,17 @@ import { IBlog } from '../types/types';
 
 const { Schema } = mongoose;
 
-const BlogSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-  title: String,
-  content: String,
-  published: { type: Boolean, default: false },
-  tags: [{ type: String }],
-  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-});
+const BlogSchema = new Schema(
+  {
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    title: String,
+    content: String,
+    published: { type: Boolean, default: false },
+    tags: [{ type: String }],
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  },
+  { timestamps: true },
+);
 
 BlogSchema.set('toJSON', {
   transform: (_document, returnedObject) => {
