@@ -4,7 +4,7 @@ import {
   register,
   logout,
   refresh,
-} from '../controllers/auth.controller';
+} from '../controllers/authController';
 import { verifyJWT } from '../middlewares/middleware';
 
 export const authRouter = express.Router();
