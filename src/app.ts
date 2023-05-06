@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 import * as logger from './utils/logger';
 import { MONGO_URI } from './config/config';
 import * as middleware from './middlewares/middleware';
-//import { userRouter } from './routes/userRouter';
+import { userRouter } from './routes/userRouter';
 import { blogRouter } from './routes/blogRouter';
 import { commentRouter } from './routes/commentRouter';
 import { authRouter } from './routes/authRouter';
@@ -41,8 +41,8 @@ app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'hello' });
 });
 
-app.use('/api/blogs', blogRouter);
-//app.use('/api/users', userRouter);
+app.use('/api/blogs', middleware.verifyJWT, blogRouter);
+app.use('/api/users', middleware.verifyJWT, userRouter);
 app.use('/api/comments', middleware.verifyJWT, commentRouter);
 app.use('/api/auth', authRouter);
 
