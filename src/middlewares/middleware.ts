@@ -13,6 +13,10 @@ export const errorHandler: ErrorRequestHandler = (
   next: NextFunction,
 ) => {
   console.log(error.stack);
+  if (error.name === 'CastError')
+    return res
+      .status(400)
+      .json({ message: 'Malformatted ID [blogId, commentId, userID]' });
   const status = res.statusCode ? res.statusCode : 500;
   res.status(status).json({ message: error.message });
   next();
@@ -24,7 +28,6 @@ export const verifyJWT = async (
   next: NextFunction,
 ) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
-  console.log(token);
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
   const decoded = jwt.verify(
     token,
