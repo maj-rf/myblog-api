@@ -20,11 +20,10 @@ export const createBlog = [
     }
     const { title, content } = req.body;
     const user = req.user;
-    console.log(user);
     const blog = new Blog({
       title,
       content,
-      user,
+      user: user?._id,
       published: false,
       comments: [],
       tags: [],
@@ -54,6 +53,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
   const user = req.user;
   const blog = await Blog.findById(id).exec();
   if (!blog) return res.status(400).json({ message: 'Blog post not found' });
+  // blog.user.toString() is the _id of user from mongo
   if (blog.user.toString() !== user?._id)
     return res
       .status(403)
