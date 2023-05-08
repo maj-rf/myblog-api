@@ -27,7 +27,7 @@ export const createCommentForThisBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.json({ errors: errors.array() });
+      return res.status(422).json({ errors: errors.array() });
     }
 
     const blog = await Blog.findById(req.params.id).exec();
@@ -45,6 +45,6 @@ export const createCommentForThisBlog = [
     });
 
     const result = await comment.save();
-    res.json(result);
+    res.status(201).json(result);
   },
 ];

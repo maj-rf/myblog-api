@@ -16,7 +16,7 @@ export const createBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.json({ errors: errors.array() });
+      return res.status(422).json({ errors: errors.array() });
     }
     const { title, content } = req.body;
     const user = req.user;
@@ -76,7 +76,7 @@ export const updateBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.json({ errors: errors.array() });
+      return res.status(422).json({ errors: errors.array() });
     }
 
     const id = req.params.id;
