@@ -69,7 +69,6 @@ export const register = [
     .trim()
     .escape()
     .custom(async (value, { req }) => {
-      console.log(value);
       if (value !== req.body.password)
         throw new Error('Passwords do not match');
     }),
@@ -95,7 +94,6 @@ export const register = [
 
 export const refresh = async (req: Request, res: Response) => {
   const cookies = req.cookies;
-  console.log(cookies.jwt);
   if (!cookies.jwt)
     return res.status(401).json({ message: 'No JWT, Unauthorized' });
   const refreshToken = cookies.jwt;
