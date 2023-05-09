@@ -1,14 +1,8 @@
 import express from 'express';
-import {
-  getAllUsers,
-  loginUser,
-  registerUser,
-} from '../controllers/userController';
-import { jwtAuth } from '../utils/middleware';
+import { getAllUsers, getCurrentUser } from '../controllers/userController';
+
 export const userRouter = express.Router();
 
-userRouter.get('/', jwtAuth, getAllUsers);
+userRouter.get('/', getAllUsers);
 
-userRouter.post('/register', registerUser);
-
-userRouter.post('/login', loginUser);
+userRouter.get('/profile', getCurrentUser);

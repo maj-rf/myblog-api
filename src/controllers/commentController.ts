@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { CustomRequest } from '../types';
-import { Blog } from '../models/blog';
 import { Comment } from '../models/comment';
-import { PublicUser, IUser } from '../types';
+import { Blog } from '../models/blog';
 export const getAllCommentsForThisBlog = async (
   req: Request,
   res: Response,
@@ -13,6 +11,10 @@ export const getAllCommentsForThisBlog = async (
     path: 'user',
     select: 'username',
   });
+  if (!comments)
+    return res
+      .status(400)
+      .json({ message: 'Blog post not found. Cannot get comments' });
   res.json(comments);
 };
 
@@ -25,23 +27,24 @@ export const createCommentForThisBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.json({ errors: errors.array() });
+      return res.status(422).json({ errors: errors.array() });
     }
+
+    const blog = await Blog.findById(req.params.id).exec();
+    if (!blog)
+      return res
+        .status(400)
+        .json({ message: 'Blog post not found. Cannot get comments' });
     const { comment_content } = req.body;
-    const blogId = req.params.id;
-    const token = (req as CustomRequest).token as IUser;
-    const user: PublicUser = { username: token.username, _id: token.id };
-    const blog = await Blog.findById(blogId);
+    const user = req.user;
+
     const comment = new Comment({
       content: comment_content,
-      user,
-      blog,
+      user: user?._id,
+      blog: req.params.id,
     });
-    if (!blog) return res.status(400).json({ error: 'Blog does not exist.' });
+
     const result = await comment.save();
-    result.depopulate('blog');
-    blog.comments = blog.comments.concat(comment._id);
-    await blog.save();
-    res.json(result);
+    res.status(201).json(result);
   },
 ];
