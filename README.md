@@ -64,7 +64,7 @@ Technologies:
 1. Go to root directory and run `npm install` to install dependencies.
 2. Create `.env` file and add your configs.
 3. Run `npm run dev` for development or `npm run build` for production.
-4. Run tests using `npm run dev`. This creates a testing MONGODB database .
+4. Run tests using `npm test`. This creates a testing MONGODB database.
 
 ## Setup for ENV variables
 
