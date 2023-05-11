@@ -2,11 +2,14 @@ import mongoose from 'mongoose';
 import { IComment } from '../types/types';
 const { Schema } = mongoose;
 
-const CommentSchema = new Schema({
-  content: { type: String, required: true },
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
-  blog: { type: Schema.Types.ObjectId, ref: 'Blog' },
-});
+const CommentSchema = new Schema(
+  {
+    content: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    blog: { type: Schema.Types.ObjectId, ref: 'Blog' },
+  },
+  { timestamps: true },
+);
 
 CommentSchema.set('toJSON', {
   transform: (_document, returnedObject) => {
