@@ -154,7 +154,7 @@ describe('blog routes', () => {
       const res = await api
         .get(baseBlog)
         .set('Authorization', `Bearer ${token}`);
-      const current = res.body.find((blog: IBlog) => blog._id === blogID);
+      const current = res.body.find((blog: IBlog) => blog.id === blogID);
       expect(current.title).toEqual('Updated Title');
     });
   });
@@ -165,7 +165,7 @@ describe('blog routes', () => {
         .get(baseBlog)
         .set('Authorization', `Bearer ${token}`);
       await api
-        .delete(`${baseBlog}/${blogs.body[1]._id}`)
+        .delete(`${baseBlog}/${blogs.body[1].id}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
       const res = await api
