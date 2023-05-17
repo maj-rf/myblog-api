@@ -8,11 +8,18 @@ import { signAccessToken, signRefreshToken } from '../utils/jwt.utils';
 import { body, validationResult } from 'express-validator';
 
 export const login = [
-  body('email', 'Email is required').trim().escape().normalizeEmail().isEmail(),
+  body('email', 'Email is required')
+    .notEmpty()
+    .trim()
+    .escape()
+    .normalizeEmail()
+    .isEmail(),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array() });
+      return res
+        .status(400)
+        .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -34,7 +41,7 @@ export const login = [
     const refreshToken = signRefreshToken(userForToken, '30d');
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production' ? true : false,
       sameSite: 'none',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
@@ -44,11 +51,13 @@ export const login = [
 
 export const register = [
   body('username', 'Username is required')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
     .withMessage('Username must be at least 6 characters'),
-  body('email')
+  body('email', 'Email is required')
+    .notEmpty()
     .trim()
     .escape()
     .normalizeEmail()
@@ -61,6 +70,7 @@ export const register = [
       }
     }),
   body('password', 'Password is required')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
@@ -75,7 +85,9 @@ export const register = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array() });
+      return res
+        .status(400)
+        .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
     const { username, email, password } = req.body;
 
@@ -118,7 +130,7 @@ export const logout = (req: Request, res: Response) => {
     return res.status(401).json({ message: 'No JWT, Unauthorized' });
   res.clearCookie('jwt', {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
     sameSite: 'none',
   });
   res.json({ message: 'Succesfully Logged Out' });

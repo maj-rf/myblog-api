@@ -20,6 +20,7 @@ export const getAllCommentsForThisBlog = async (
 
 export const createCommentForThisBlog = [
   body('comment_content', 'Comment content is required')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 2 })

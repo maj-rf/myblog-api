@@ -4,11 +4,13 @@ import { body, validationResult } from 'express-validator';
 import { Blog } from '../models/blog';
 export const createBlog = [
   body('title', 'Title is required.')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
     .withMessage('Title must be at least 6 characters.'),
   body('content', 'Content is required.')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
@@ -16,7 +18,9 @@ export const createBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      return res
+        .status(400)
+        .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
     const { title, content } = req.body;
     const user = req.user;
@@ -79,7 +83,9 @@ export const updateBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      return res
+        .status(422)
+        .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
 
     const id = req.params.id;
