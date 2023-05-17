@@ -2,8 +2,15 @@ import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { PayloadWithPublicUser } from '../types/types';
 import { ACCESS_TOKEN_SECRET } from '../config/config';
-export const unknownEndpoint = (_request: Request, response: Response) => {
-  response.status(404).send({ error: 'unknown endpoint' });
+
+export const unknownEndpoint = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const error = new Error(`Not Found - ${req.originalUrl}`);
+  res.status(404);
+  next(error);
 };
 
 export const errorHandler: ErrorRequestHandler = (
@@ -17,7 +24,7 @@ export const errorHandler: ErrorRequestHandler = (
     return res
       .status(400)
       .json({ message: 'Malformatted ID [blogId, commentId, userID]' });
-  const status = res.statusCode ? res.statusCode : 500;
+  const status = res.statusCode != 200 ? res.statusCode : 500;
   res.status(status).json({ message: error.message });
   next();
 };
