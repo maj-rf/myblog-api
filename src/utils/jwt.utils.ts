@@ -1,16 +1,17 @@
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config/config';
+import { ACCESS_TOKEN_SECRET } from '../config/config';
 import { PublicUser } from '../types/types';
+import { Response } from 'express';
 
-export const signAccessToken = (payload: PublicUser, expiresIn: string) =>
-  jwt.sign(payload, `${ACCESS_TOKEN_SECRET}`, { expiresIn });
+export const signAccessToken = (res: Response, payload: PublicUser) => {
+  const token = jwt.sign(payload, `${ACCESS_TOKEN_SECRET}`, {
+    expiresIn: '30d',
+  });
 
-export const signRefreshToken = (payload: PublicUser, expiresIn: string) =>
-  jwt.sign(payload, `${REFRESH_TOKEN_SECRET}`, { expiresIn });
-
-// export const verifyRefreshToken = async (token) =>
-// try{
-//   const decoded = jwt.verify(token, `${REFRESH_TOKEN_SECRET}`);
-// } catch(error){
-
-// }
+  res.cookie('jwt', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30d
+  });
+};

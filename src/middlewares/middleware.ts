@@ -34,14 +34,19 @@ export const verifyJWT = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+  const token: string = req.cookies.jwt;
+  if (!token)
+    return res.status(401).json({ message: 'Unauthorized. No JWT Token' });
   const decoded = jwt.verify(
     token,
     `${ACCESS_TOKEN_SECRET}`,
   ) as PayloadWithPublicUser;
-  if (!decoded) return res.status(403).json({ message: 'Forbidden' });
-  const user = { _id: decoded.id, username: decoded.username };
+  if (!decoded) return res.status(403).json({ message: 'Invalid Token' });
+  const user = {
+    _id: decoded.id,
+    username: decoded.username,
+    email: decoded.email,
+  };
   req.user = user;
   next();
 };
