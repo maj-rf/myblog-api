@@ -3,18 +3,18 @@ import { body, validationResult } from 'express-validator';
 
 import { Blog } from '../models/blog';
 export const createBlog = [
-  body('title', 'Title is required.')
+  body('title', 'Title is required')
     .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
-    .withMessage('Title must be at least 6 characters.'),
-  body('content', 'Content is required.')
+    .withMessage('Title must be at least 6 characters'),
+  body('content', 'Content is required')
     .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
-    .withMessage('Content must be at least 6 characters.'),
+    .withMessage('Content must be at least 6 characters'),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -70,16 +70,18 @@ export const deleteBlog = async (req: Request, res: Response) => {
 };
 
 export const updateBlog = [
-  body('title', 'Title is required.')
+  body('title', 'Title is required')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
-    .withMessage('Title must be at least 6 characters.'),
-  body('content', 'Content is required.')
+    .withMessage('Title must be at least 6 characters'),
+  body('content', 'Content is required')
+    .notEmpty()
     .trim()
     .escape()
     .isLength({ min: 6 })
-    .withMessage('Content must be at least 6 characters.'),
+    .withMessage('Content must be at least 6 characters'),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
