@@ -108,3 +108,20 @@ export const updateBlog = [
     res.status(202).json({ message: `Blog [${blog.title}] has been updated.` });
   },
 ];
+
+export const getProfileBlogs = async (req: Request, res: Response) => {
+  const user = req.user;
+  const blogs = await Blog.find({ user: user?._id }).populate({
+    path: 'user',
+    select: 'username',
+  });
+  res.json(blogs);
+};
+
+export const getRecentBlogs = async (req: Request, res: Response) => {
+  const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(4).populate({
+    path: 'user',
+    select: 'username',
+  });
+  res.json(blogs);
+};
