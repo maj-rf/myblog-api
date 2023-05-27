@@ -34,9 +34,9 @@ app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'hello' });
 });
 
-app.use('/api/blogs', middleware.verifyJWT, blogRouter);
+app.use('/api/blogs', blogRouter);
 app.use('/api/users', middleware.verifyJWT, userRouter);
-app.use('/api/comments', middleware.verifyJWT, commentRouter);
+app.use('/api/comments', commentRouter);
 app.use('/api/auth', authRouter);
 
 app.use(middleware.unknownEndpoint);

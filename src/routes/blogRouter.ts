@@ -4,16 +4,23 @@ import {
   deleteBlog,
   getAllBlogs,
   getOneBlog,
+  getProfileBlogs,
+  getRecentBlogs,
   updateBlog,
 } from '../controllers/blogController';
+import { verifyJWT } from '../middlewares/middleware';
 export const blogRouter = express.Router();
 
-blogRouter.get('/', getAllBlogs);
+blogRouter.get('/all', getAllBlogs);
 
-blogRouter.post('/', createBlog);
+blogRouter.get('/recent', getRecentBlogs);
 
-blogRouter.get('/:id', getOneBlog);
+blogRouter.get('/profile', verifyJWT, getProfileBlogs);
 
-blogRouter.delete('/:id', deleteBlog);
+blogRouter.post('/blog', verifyJWT, createBlog);
 
-blogRouter.put('/:id', updateBlog);
+blogRouter.get('/blog/:id', getOneBlog);
+
+blogRouter.delete('/blog/:id', verifyJWT, deleteBlog);
+
+blogRouter.put('/blog/:id', verifyJWT, updateBlog);
