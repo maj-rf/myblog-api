@@ -28,7 +28,9 @@ export const createCommentForThisBlog = [
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      return res
+        .status(422)
+        .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
 
     const blog = await Blog.findById(req.params.id).exec();
