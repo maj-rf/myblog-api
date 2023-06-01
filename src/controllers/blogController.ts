@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-
 import { Blog } from '../models/blog';
+import { Comment } from '../models/comment';
+
 export const createBlog = [
   body('title', 'Title is required')
     .notEmpty()
@@ -65,6 +66,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
     return res
       .status(403)
       .json({ message: 'Forbidden. You are not the original author.' });
+  await Comment.deleteMany({ blog: id });
   await blog.deleteOne();
   res.json({ message: `Blog [${blog.title}] has been deleted.` });
 };
@@ -72,12 +74,14 @@ export const deleteBlog = async (req: Request, res: Response) => {
 export const updateBlog = [
   body('title', 'Title is required')
     .notEmpty()
+    .unescape()
     .trim()
     .escape()
     .isLength({ min: 6 })
     .withMessage('Title must be at least 6 characters'),
   body('content', 'Content is required')
     .notEmpty()
+    .unescape()
     .trim()
     .escape()
     .isLength({ min: 6 })
@@ -119,7 +123,7 @@ export const getProfileBlogs = async (req: Request, res: Response) => {
 };
 
 export const getRecentBlogs = async (req: Request, res: Response) => {
-  const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(4).populate({
+  const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(6).populate({
     path: 'user',
     select: 'username',
   });

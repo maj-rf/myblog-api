@@ -11,6 +11,11 @@ export const login = [
     .escape()
     .normalizeEmail()
     .isEmail(),
+  body('password', 'Password is required')
+    .notEmpty()
+    .unescape()
+    .trim()
+    .escape(),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -63,6 +68,7 @@ export const register = [
     }),
   body('password', 'Password is required')
     .notEmpty()
+    .unescape()
     .trim()
     .escape()
     .isLength({ min: 6 })
@@ -108,10 +114,9 @@ export const logout = (req: Request, res: Response) => {
   const cookies = req.cookies;
   if (!cookies.jwt)
     return res.status(401).json({ message: 'No JWT, Unauthorized' });
-  res.clearCookie('jwt', {
+  res.cookie('jwt', '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' ? true : false,
-    sameSite: 'strict',
+    expires: new Date(0),
   });
   res.json({ message: 'Succesfully Logged Out' });
 };
