@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/user';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { REFRESH_TOKEN_SECRET } from '../config/config';
-import { PayloadWithPublicUser } from '../types/types';
-import { signAccessToken, signRefreshToken } from '../utils/jwt.utils';
+import { signAccessToken } from '../utils/jwt.utils';
 import { body, validationResult } from 'express-validator';
 
 export const login = [
@@ -14,6 +11,11 @@ export const login = [
     .escape()
     .normalizeEmail()
     .isEmail(),
+  body('password', 'Password is required')
+    .notEmpty()
+    .unescape()
+    .trim()
+    .escape(),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -27,25 +29,20 @@ export const login = [
       ? await bcrypt.compare(password, user.password)
       : false;
     if (!user) {
-      return res.status(400).json({ message: 'Email does not exist.' });
+      return res.status(400).json({ message: 'Email does not exist' });
     }
     if (!passwordCorrect) {
-      return res.status(401).json({ message: 'Incorrect password.' });
+      return res.status(401).json({ message: 'Incorrect password' });
     }
     const userForToken = {
       username: user.username,
       id: user._id,
+      email: user.email,
     };
-
-    const accessToken = signAccessToken(userForToken, '15m');
-    const refreshToken = signRefreshToken(userForToken, '30d');
-    res.cookie('jwt', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: 'none',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
-    res.send({ accessToken });
+    signAccessToken(res, userForToken);
+    res
+      .status(200)
+      .json({ id: user._id, username: user.username, email: user.email });
   },
 ];
 
@@ -66,11 +63,12 @@ export const register = [
     .custom(async (mail) => {
       const existingEmail = await User.findOne({ email: mail });
       if (existingEmail) {
-        throw new Error('Email is already in use. Try again.');
+        throw new Error('Email is already in use');
       }
     }),
   body('password', 'Password is required')
     .notEmpty()
+    .unescape()
     .trim()
     .escape()
     .isLength({ min: 6 })
@@ -98,40 +96,27 @@ export const register = [
       email,
       password: passwordHash,
     });
-
     await user.save();
-    res.status(201).json({ message: 'Succesfully registered' });
+
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+      email: user.email,
+    };
+    signAccessToken(res, userForToken);
+    res
+      .status(201)
+      .json({ id: user._id, username: user.username, email: user.email });
   },
 ];
-
-export const refresh = async (req: Request, res: Response) => {
-  const cookies = req.cookies;
-  if (!cookies.jwt)
-    return res.status(401).json({ message: 'No JWT, Unauthorized' });
-  const refreshToken = cookies.jwt;
-  const decoded = jwt.verify(
-    refreshToken,
-    `${REFRESH_TOKEN_SECRET}`,
-  ) as PayloadWithPublicUser;
-  if (!decoded) return res.status(403).json({ message: 'Forbidden' });
-  const user = await User.findById(decoded.id);
-  if (!user) return res.status(401).json({ message: 'Unauthorized' });
-  const userForToken = {
-    username: user.username,
-    id: user._id,
-  };
-  const accessToken = signAccessToken(userForToken, '15m');
-  res.json({ accessToken });
-};
 
 export const logout = (req: Request, res: Response) => {
   const cookies = req.cookies;
   if (!cookies.jwt)
     return res.status(401).json({ message: 'No JWT, Unauthorized' });
-  res.clearCookie('jwt', {
+  res.cookie('jwt', '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' ? true : false,
-    sameSite: 'none',
+    expires: new Date(0),
   });
   res.json({ message: 'Succesfully Logged Out' });
 };

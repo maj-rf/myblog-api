@@ -24,7 +24,7 @@ export interface IUser extends Document {
   //blog: Array<ObjectId>;
 }
 
-export type PublicUser = Pick<IUser, '_id' | 'username'>;
+export type PublicUser = Pick<IUser, '_id' | 'username' | 'email'>;
 
 export interface CustomRequest extends Request {
   token: string | JwtPayload;

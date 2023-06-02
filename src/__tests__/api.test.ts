@@ -46,8 +46,8 @@ describe('auth routes', () => {
     test('user login - success', async () => {
       const validUser = { email: 'default@gmail.com', password: 'secret' };
       const res = await api.post(`${baseAuth}/login`).send(validUser);
-      token = res.body.accessToken;
-      expect(res.body.accessToken).toBeDefined();
+      token = res.headers['set-cookie'];
+      expect(res.headers['set-cookie']).toBeDefined();
     });
 
     test('user login - missing email', async () => {
@@ -88,32 +88,20 @@ describe('blog routes', () => {
   const baseBlog = '/api/blogs';
 
   describe('GET /api/blogs', () => {
-    test('get all blogs - unauthenticated user', async () => {
-      await api.get(baseBlog).expect(401);
-    });
-
-    test('get all blogs - authenticated user', async () => {
-      await api
-        .get(baseBlog)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(200);
+    test('get all blogs', async () => {
+      await api.get(`${baseBlog}/all`).set('Cookie', [token]).expect(200);
     });
   });
 
-  describe('POST /api/blogs', () => {
+  describe('POST /api/blogs/blog', () => {
     test('create a blog - success', async () => {
       const blog = {
         title: 'A Random Title',
         content: 'Random Content',
       };
-      await api
-        .post('/api/blogs/')
-        .set('Authorization', `Bearer ${token}`)
-        .send(blog);
+      await api.post(`${baseBlog}/blog`).set('Cookie', [token]).send(blog);
       expect(201);
-      const res = await api
-        .get(baseBlog)
-        .set('Authorization', `Bearer ${token}`);
+      const res = await api.get(`${baseBlog}/all`).set('Cookie', [token]);
       expect(res.body).toHaveLength(2);
     });
 
@@ -121,22 +109,19 @@ describe('blog routes', () => {
       const blog = {
         content: 'Random Content',
       };
-      await api
-        .post('/api/blogs/')
-        .set('Authorization', `Bearer ${token}`)
-        .send(blog);
+      await api.post(`${baseBlog}/blog`).set('Cookie', [token]).send(blog);
       expect(422);
     });
   });
 
-  describe('PUT /api/blogs/:id', () => {
+  describe('PUT /api/blogs/blog/:id', () => {
     test('blog update - incomplete input', async () => {
       const update = {
         title: 'Updated Title',
       };
       await api
-        .put(`${baseBlog}/${blogID}`)
-        .set('Authorization', `Bearer ${token}`)
+        .put(`${baseBlog}/blog/${blogID}`)
+        .set('Cookie', [token])
         .send(update)
         .expect(422);
     });
@@ -147,13 +132,11 @@ describe('blog routes', () => {
         content: 'Updated Content',
       };
       await api
-        .put(`${baseBlog}/${blogID}`)
-        .set('Authorization', `Bearer ${token}`)
+        .put(`${baseBlog}/blog/${blogID}`)
+        .set('Cookie', [token])
         .send(update)
         .expect(202);
-      const res = await api
-        .get(baseBlog)
-        .set('Authorization', `Bearer ${token}`);
+      const res = await api.get(`${baseBlog}/all`).set('Cookie', [token]);
       const current = res.body.find((blog: IBlog) => blog.id === blogID);
       expect(current.title).toEqual('Updated Title');
     });
@@ -161,16 +144,12 @@ describe('blog routes', () => {
 
   describe('DELETE /api/blogs/:id', () => {
     test('delete blog', async () => {
-      const blogs = await api
-        .get(baseBlog)
-        .set('Authorization', `Bearer ${token}`);
+      const blogs = await api.get(`${baseBlog}/all`).set('Cookie', [token]);
       await api
-        .delete(`${baseBlog}/${blogs.body[1].id}`)
-        .set('Authorization', `Bearer ${token}`)
+        .delete(`${baseBlog}/blog/${blogs.body[1].id}`)
+        .set('Cookie', [token])
         .expect(200);
-      const res = await api
-        .get(baseBlog)
-        .set('Authorization', `Bearer ${token}`);
+      const res = await api.get(`${baseBlog}/all`).set('Cookie', [token]);
       expect(res.body).toHaveLength(1);
     });
   });
@@ -187,7 +166,7 @@ describe('comment routes', () => {
       };
       await api
         .post(`/api/comments/${blogID}`)
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', [token])
         .send(comment)
         .expect(201);
     });
@@ -195,7 +174,7 @@ describe('comment routes', () => {
     test('create comment - missing content', async () => {
       await api
         .post(`/api/comments/${blogID}`)
-        .set('Authorization', `Bearer ${token}`)
+        .set('Cookie', [token])
         .send()
         .expect(422);
     });
