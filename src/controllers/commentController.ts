@@ -51,3 +51,23 @@ export const createCommentForThisBlog = [
     res.status(201).json(result);
   },
 ];
+
+export const getRecentComments = async (req: Request, res: Response) => {
+  const comments = await Comment.find({})
+    .sort({ createdAt: -1 })
+    .limit(6)
+    .populate({
+      path: 'user',
+      select: 'username',
+    })
+    .populate({
+      path: 'blog',
+      select: 'title',
+    });
+
+  if (!comments)
+    return res
+      .status(400)
+      .json({ message: 'Server error. Cannot get comments' });
+  res.json(comments);
+};
