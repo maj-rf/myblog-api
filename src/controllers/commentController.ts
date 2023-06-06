@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { Comment } from '../models/comment';
 import { Blog } from '../models/blog';
+import he from 'he';
+
 export const getAllCommentsForThisBlog = async (
   req: Request,
   res: Response,
@@ -15,6 +17,11 @@ export const getAllCommentsForThisBlog = async (
     return res
       .status(400)
       .json({ message: 'Blog post not found. Cannot get comments' });
+
+  for (const comment of comments) {
+    comment.content = he.decode(comment.content);
+  }
+
   res.json(comments);
 };
 
@@ -69,5 +76,9 @@ export const getRecentComments = async (req: Request, res: Response) => {
     return res
       .status(400)
       .json({ message: 'Server error. Cannot get comments' });
+
+  for (const comment of comments) {
+    comment.content = he.decode(comment.content);
+  }
   res.json(comments);
 };

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { Blog } from '../models/blog';
 import { Comment } from '../models/comment';
+import he from 'he';
 
 export const createBlog = [
   body('title', 'Title is required')
@@ -53,6 +54,8 @@ export const getOneBlog = async (req: Request, res: Response) => {
     select: 'username',
   });
   if (!blog) return res.status(400).json({ message: 'Blog post not found' });
+  blog.title = he.decode(blog.title);
+  blog.content = he.decode(blog.content);
   res.json(blog);
 };
 
@@ -119,6 +122,12 @@ export const getProfileBlogs = async (req: Request, res: Response) => {
     path: 'user',
     select: 'username',
   });
+
+  for (const blog of blogs) {
+    blog.title = he.decode(blog.title);
+    blog.content = he.decode(blog.content);
+  }
+
   res.json(blogs);
 };
 
@@ -127,5 +136,11 @@ export const getRecentBlogs = async (req: Request, res: Response) => {
     path: 'user',
     select: 'username',
   });
+
+  for (const blog of blogs) {
+    blog.title = he.decode(blog.title);
+    blog.content = he.decode(blog.content);
+  }
+
   res.json(blogs);
 };
