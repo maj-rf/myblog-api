@@ -24,13 +24,13 @@ export const createBlog = [
         .status(400)
         .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
-    const { title, content } = req.body;
+    const { title, content, published } = req.body;
     const user = req.user;
     const blog = new Blog({
       title,
       content,
       user: user?._id,
-      published: false,
+      published: published || false,
       comments: [],
       tags: [],
     });
@@ -105,8 +105,8 @@ export const updateBlog = [
       return res
         .status(403)
         .json({ message: 'Forbidden. You are not the original author.' });
-    const { title, content } = req.body;
-    const update = { title, content };
+    const { title, content, published } = req.body;
+    const update = { title, content, published };
     await Blog.findByIdAndUpdate(id, update, {
       new: true,
       runValidators: true,
