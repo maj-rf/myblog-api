@@ -132,10 +132,13 @@ export const getProfileBlogs = async (req: Request, res: Response) => {
 };
 
 export const getRecentBlogs = async (req: Request, res: Response) => {
-  const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(6).populate({
-    path: 'user',
-    select: 'username',
-  });
+  const blogs = await Blog.find({ published: true })
+    .sort({ createdAt: -1 })
+    .limit(6)
+    .populate({
+      path: 'user',
+      select: 'username',
+    });
 
   for (const blog of blogs) {
     blog.title = he.decode(blog.title);
