@@ -69,16 +69,19 @@ export const getRecentComments = async (req: Request, res: Response) => {
     })
     .populate({
       path: 'blog',
-      select: 'title',
+      select: 'title published',
+      match: { published: true },
     });
+
+  const newComments = comments.filter((comment) => comment.blog !== null);
 
   if (!comments)
     return res
       .status(400)
       .json({ message: 'Server error. Cannot get comments' });
 
-  for (const comment of comments) {
+  for (const comment of newComments) {
     comment.content = he.decode(comment.content);
   }
-  res.json(comments);
+  res.json(newComments);
 };
