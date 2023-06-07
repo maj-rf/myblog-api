@@ -44,6 +44,7 @@ const corsOptions_1 = require("./config/corsOptions");
 const app = (0, express_1.default)();
 morgan_1.default.token('body', (req) => JSON.stringify(req.body));
 app.use((0, cors_1.default)(corsOptions_1.corsOptions));
+app.use(express_1.default.static('dist'));
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());

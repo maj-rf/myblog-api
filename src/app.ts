@@ -17,8 +17,8 @@ connectDB();
 // MIDDLEWARES
 const app = express();
 morgan.token('body', (req: Request) => JSON.stringify(req.body));
-
 app.use(cors(corsOptions));
+app.use(express.static('dist'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
