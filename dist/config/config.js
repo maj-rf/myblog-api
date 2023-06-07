@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ACCESS_TOKEN_SECRET = exports.MONGO_URI = exports.PORT = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-exports.PORT = process.env.PORT;
+exports.PORT = process.env.PORT || '3003';
 // Use test DB if running tests
 exports.MONGO_URI = process.env.NODE_ENV === 'test'
     ? process.env.TEST_MONGO_URI
