@@ -5,6 +5,7 @@ const config_1 = require("./config");
 const allowedOrigins = [
     `https://localhost:${config_1.PORT}`,
     'https://muni-api.onrender.com/',
+    'https://muni-9n97.onrender.com',
 ];
 exports.corsOptions = {
     origin: allowedOrigins,
