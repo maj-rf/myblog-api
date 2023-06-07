@@ -9,7 +9,7 @@ import { blogRouter } from './routes/blogRouter';
 import { commentRouter } from './routes/commentRouter';
 import { authRouter } from './routes/authRouter';
 import { connectDB } from './config/db';
-import { corsOptions } from './config/corsOptions';
+//import { corsOptions } from './config/corsOptions';
 import path from 'path';
 // MONGODB CONNECTION
 connectDB();
@@ -17,19 +17,7 @@ connectDB();
 // MIDDLEWARES
 const app = express();
 morgan.token('body', (req: Request) => JSON.stringify(req.body));
-app.use(cors(corsOptions));
-if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, './dist')));
-
-  app.get('*', (_req: Request, res: Response) =>
-    res.sendFile(path.resolve(__dirname, './dist', 'index.html')),
-  );
-} else {
-  app.get('/', (_req, res) => {
-    res.json({ message: 'welcome to muni' });
-  });
-}
+app.use(cors());
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -43,6 +31,19 @@ app.use('/api/blogs', blogRouter);
 app.use('/api/users', middleware.verifyJWT, userRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/auth', authRouter);
+
+if (process.env.NODE_ENV === 'production') {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, 'dist')));
+
+  app.get('*', (_req: Request, res: Response) =>
+    res.sendFile(path.resolve(__dirname, 'dist', 'index.html')),
+  );
+} else {
+  app.get('/', (_req, res) => {
+    res.json({ message: 'welcome to muni' });
+  });
+}
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

@@ -37,24 +37,14 @@ const blogRouter_1 = require("./routes/blogRouter");
 const commentRouter_1 = require("./routes/commentRouter");
 const authRouter_1 = require("./routes/authRouter");
 const db_1 = require("./config/db");
-const corsOptions_1 = require("./config/corsOptions");
+//import { corsOptions } from './config/corsOptions';
 const path_1 = __importDefault(require("path"));
 // MONGODB CONNECTION
 (0, db_1.connectDB)();
 // MIDDLEWARES
 const app = (0, express_1.default)();
 morgan_1.default.token('body', (req) => JSON.stringify(req.body));
-app.use((0, cors_1.default)(corsOptions_1.corsOptions));
-if (process.env.NODE_ENV === 'production') {
-    const __dirname = path_1.default.resolve();
-    app.use(express_1.default.static(path_1.default.join(__dirname, './dist')));
-    app.get('*', (_req, res) => res.sendFile(path_1.default.resolve(__dirname, './dist', 'index.html')));
-}
-else {
-    app.get('/', (_req, res) => {
-        res.json({ message: 'welcome to muni' });
-    });
-}
+app.use((0, cors_1.default)());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
@@ -64,6 +54,16 @@ app.use('/api/blogs', blogRouter_1.blogRouter);
 app.use('/api/users', middleware.verifyJWT, userRouter_1.userRouter);
 app.use('/api/comments', commentRouter_1.commentRouter);
 app.use('/api/auth', authRouter_1.authRouter);
+if (process.env.NODE_ENV === 'production') {
+    const __dirname = path_1.default.resolve();
+    app.use(express_1.default.static(path_1.default.join(__dirname, 'dist')));
+    app.get('*', (_req, res) => res.sendFile(path_1.default.resolve(__dirname, 'dist', 'index.html')));
+}
+else {
+    app.get('/', (_req, res) => {
+        res.json({ message: 'welcome to muni' });
+    });
+}
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 exports.default = app;
