@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { Blog } from '../models/blog';
 import { Comment } from '../models/comment';
+import he from 'he';
 
 export const createBlog = [
   body('title', 'Title is required')
@@ -23,13 +24,13 @@ export const createBlog = [
         .status(400)
         .json({ message: errors.array({ onlyFirstError: true })[0].msg });
     }
-    const { title, content } = req.body;
+    const { title, content, published } = req.body;
     const user = req.user;
     const blog = new Blog({
       title,
       content,
       user: user?._id,
-      published: false,
+      published: published || false,
       comments: [],
       tags: [],
     });
@@ -53,6 +54,8 @@ export const getOneBlog = async (req: Request, res: Response) => {
     select: 'username',
   });
   if (!blog) return res.status(400).json({ message: 'Blog post not found' });
+  blog.title = he.decode(blog.title);
+  blog.content = he.decode(blog.content);
   res.json(blog);
 };
 
@@ -102,8 +105,8 @@ export const updateBlog = [
       return res
         .status(403)
         .json({ message: 'Forbidden. You are not the original author.' });
-    const { title, content } = req.body;
-    const update = { title, content };
+    const { title, content, published } = req.body;
+    const update = { title, content, published };
     await Blog.findByIdAndUpdate(id, update, {
       new: true,
       runValidators: true,
@@ -119,13 +122,28 @@ export const getProfileBlogs = async (req: Request, res: Response) => {
     path: 'user',
     select: 'username',
   });
+
+  for (const blog of blogs) {
+    blog.title = he.decode(blog.title);
+    blog.content = he.decode(blog.content);
+  }
+
   res.json(blogs);
 };
 
 export const getRecentBlogs = async (req: Request, res: Response) => {
-  const blogs = await Blog.find({}).sort({ createdAt: -1 }).limit(6).populate({
-    path: 'user',
-    select: 'username',
-  });
+  const blogs = await Blog.find({ published: true })
+    .sort({ createdAt: -1 })
+    .limit(6)
+    .populate({
+      path: 'user',
+      select: 'username',
+    });
+
+  for (const blog of blogs) {
+    blog.title = he.decode(blog.title);
+    blog.content = he.decode(blog.content);
+  }
+
   res.json(blogs);
 };
