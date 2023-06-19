@@ -47,8 +47,10 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "cloudinary": "^1.37.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "datauri": "^4.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
