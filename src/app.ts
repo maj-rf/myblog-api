@@ -9,7 +9,7 @@ import { blogRouter } from './routes/blogRouter';
 import { commentRouter } from './routes/commentRouter';
 import { authRouter } from './routes/authRouter';
 import { connectDB } from './config/db';
-//import { corsOptions } from './config/corsOptions';
+import { corsOptions } from './config/corsOptions';
 import path from 'path';
 // MONGODB CONNECTION
 connectDB();
@@ -17,7 +17,7 @@ connectDB();
 // MIDDLEWARES
 const app = express();
 morgan.token('body', (req: Request) => JSON.stringify(req.body));
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
